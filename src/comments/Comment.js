@@ -1,3 +1,4 @@
+
 import CommentForm from "./CommentForm";
 
 const Comment = ({
@@ -5,10 +6,11 @@ const Comment = ({
   replies,
   currentUserId,
   deleteComment,
+  updateComment,
   activeComment,
   setActiveComment,
   parentId = null,
-  addComment
+  addComment,
 }) => {
   const fiveMinutes = 300000;
   const timePassed = new Date() - new Date(comment.createdAt) > fiveMinutes;
@@ -24,7 +26,7 @@ const Comment = ({
     activeComment &&
     activeComment.type === "editing" &&
     activeComment.id === comment.id;
-  const replyId = parentId ? parentId : comment.id
+  const replyId = parentId ? parentId : comment.id;
 
   return (
     <div className="comment">
@@ -35,7 +37,16 @@ const Comment = ({
         <div className="comment-content">
           <div className="comment-author">{comment.username}</div>
           <div>{createdAt}</div>
-          <div className="comment-text">{comment.body}</div>
+          {!isEditing && <div className="comment-text">{comment.body}</div>}
+          {isEditing && (
+            <CommentForm
+              submitLabel="Update"
+              hasCancelButton
+              initialText={comment.body}
+              handleSubmit={(text) => updateComment(text, comment.id)}
+              handleCancel={() => setActiveComment(null)}
+            />
+          )}
           <div className="comment-actions">
             {canReply && (
               <div
@@ -81,6 +92,7 @@ const Comment = ({
                   replies={[]}
                   currentUserId={currentUserId}
                   deleteComment={deleteComment}
+                  updateComment={updateComment}
                   activeComment={activeComment}
                   setActiveComment={setActiveComment}
                   parentId={comment.id}
